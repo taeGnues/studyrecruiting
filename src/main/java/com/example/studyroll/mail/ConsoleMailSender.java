@@ -1,4 +1,4 @@
-package com.example.studyroll.account;
+package com.example.studyroll.mail;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;

@@ -75,7 +75,7 @@ public class AccountControllerTest {
 
 //        assertTrue(accountRepository.existsByEmail("hi563@naver.com")); // 해당값 존재하는지 확인
         Account account = accountRepository.findByEmail("hi563@naver.com");
-
+        assertNotNull(account.getEmailCheckToken());
         assertNotNull(account);
         assertNotEquals(account.getPassword(), "12345678");
 

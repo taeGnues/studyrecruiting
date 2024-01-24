@@ -1,10 +1,12 @@
 package com.example.studyroll.account;
 
 import com.example.studyroll.domain.Account;
+import com.example.studyroll.mail.ConsoleMailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -13,6 +15,7 @@ public class AccountService {
     private final ConsoleMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void processNewAccount(SignUpForm signUpForm) {
         Account newAccount = saveNewAccount(signUpForm); // 정보가지고 계정 저장
         newAccount.generateEmailCheckToken(); // 이메일 확인용 토큰 생성
