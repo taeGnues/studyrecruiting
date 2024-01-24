@@ -11,6 +11,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,6 +81,44 @@ public class AccountControllerTest {
         assertNotEquals(account.getPassword(), "12345678");
 
 //        then(javaMailSender).should().send(any(SimpleMailMessage.class)); // 호출이 실제로 됐는지 확인.
+
+    }
+
+    // 인증 메일 확인 - 인증값 오류
+    @Test
+    public void checkEmailToken_with_wrong() throws Exception{
+        //given
+        mockMvc.perform(get("/check-email-token")
+                .param("token", "afagaaaaaaaf")
+                .param("email", "test@test.com"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("error"))
+                .andExpect(view().name("account/checked-email"));
+        
+    }
+    // 인증메일 확인 - 입력값 정상
+    @Test
+    @Transactional // test에 기본적으로 transactional이 없기때문에 써줘야함.
+    public void checkEmailToken_with_correct() throws Exception{
+
+        Account account = Account.builder()
+                .email("hi563@naver.com")
+                .password("12345678")
+                .nickname("gnues")
+                .build();
+
+        Account savedAccount = accountRepository.save(account);
+        savedAccount.generateEmailCheckToken();
+
+
+        //given
+        mockMvc.perform(get("/check-email-token")
+                        .param("token", savedAccount.getEmailCheckToken())
+                        .param("email", savedAccount.getEmail()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("nickname"))
+                .andExpect(model().attributeExists("numberOfUser"))
+                .andExpect(view().name("account/checked-email"));
 
     }
 }
